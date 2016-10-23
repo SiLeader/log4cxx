@@ -80,7 +80,7 @@ namespace log4cxx {
             auto ttstr=detail::time::nanoduration_to_time(now);
 
             std::stringstream ss;
-            ss<<"["<<ttstr"] "<<msg<<std::flush;
+            ss<<"["<<ttstr<<"] "<<msg<<std::flush;
 
             if(m_console) {
                 std::cout<<ss.str()<<std::endl;
