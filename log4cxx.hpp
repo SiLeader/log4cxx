@@ -58,8 +58,8 @@ namespace log4cxx {
 
                 char buf[256]={0};
                 strftime(buf, 256, "%Y:%m:%d %H:%M:%S.", ptm);
-                std::string str=buf;
-                str+="UTC ";
+                std::string str="UTC ";
+                str+=buf;
                 str+=std::to_string(ns);
                 //return tt;
                 return str;
