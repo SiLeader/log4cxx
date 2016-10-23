@@ -1,6 +1,9 @@
 /*
     log4cxx is C++ Log manager like log4js
     (C) 2016 SiLeader.
+
+    Licensed under MIT License.
+    https://opensource.org/licenses/mit-license.php
 */
 
 // Version 1.0.0-release
@@ -12,6 +15,7 @@
 #include <chrono>
 #include <unordered_map>
 #include <sstream>
+#include <iostream>
 
 #include "picojson.hpp"
 
@@ -20,22 +24,21 @@ namespace log4cxx {
         enum class Level {
             Fatal=5, Error=4, Warn=3, Info=2, Debug=1, Trace=0, Off=6,
         };
-        inline Level convert_string_to_level(const std::string& ls) {
-            std::string lev;
-            std::transform(ls.begin(), ls.end(), lev.begin(), ::tolower);
-            if(lev=="off") {
+        inline Level convert_string_to_level(std::string ls) {
+            std::transform(ls.begin(), ls.end(), ls.begin(), ::tolower);
+            if(ls=="off") {
                 return Level::Off;
-            }else if(lev=="trace") {
+            }else if(ls=="trace") {
                 return Level::Trace;
-            }else if(lev=="debug") {
+            }else if(ls=="debug") {
                 return Level::Debug;
-            }else if(lev=="info") {
+            }else if(ls=="info") {
                 return Level::Info;
-            }else if(lev=="warn") {
+            }else if(ls=="warn") {
                 return Level::Warn;
-            }else if(lev=="error") {
+            }else if(ls=="error") {
                 return Level::Error;
-            }else if(lev=="fatal") {
+            }else if(ls=="fatal") {
                 return Level::Fatal;
             }else{
                 return Level::Trace;
@@ -45,8 +48,7 @@ namespace log4cxx {
             struct Time {
                 unsigned int year, month, day, hour, minute, second, nanosec;
             };
-            inline std::string nanoduration_to_time(/*std::chrono::nanoseconds nsec*/std::chrono::high_resolution_clock::time_point& tp) {
-                //Time tt;
+            inline std::string nanoduration_to_time(std::chrono::high_resolution_clock::time_point& tp) {
                 auto nsec=std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch());
 
                 auto sec=std::chrono::duration_cast<std::chrono::seconds>(nsec);
@@ -61,7 +63,7 @@ namespace log4cxx {
                 std::string str="UTC ";
                 str+=buf;
                 str+=std::to_string(ns);
-                //return tt;
+
                 return str;
             }
         } /* time */
