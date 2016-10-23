@@ -11,13 +11,14 @@
 #include <cctype>
 #include <chrono>
 #include <unordered_map>
+#include <sstream>
 
 #include "picojson.hpp"
 
 namespace log4cxx {
     namespace detail {
         enum class Level {
-            Fatal, Error, Warn, Info, Debug, Trace, Off,
+            Fatal=5, Error=4, Warn=3, Info=2, Debug=1, Trace=0, Off=6,
         };
         inline Level convert_string_to_level(const std::string& ls) {
             std::string lev;
@@ -58,6 +59,7 @@ namespace log4cxx {
                 char buf[256]={0};
                 strftime(buf, 256, "%Y:%m:%d %H:%M:%S.", ptm);
                 std::string str=buf;
+                str+="UTC ";
                 str+=std::to_string(ns);
                 //return tt;
                 return str;
@@ -76,6 +78,13 @@ namespace log4cxx {
         void m_write(const std::string& msg) {
             auto now=std::chrono::high_resolution_clock::now();
             auto ttstr=detail::time::nanoduration_to_time(now);
+
+            std::stringstream ss;
+            ss<<"["<<ttstr"] "<<msg<<std::flush;
+
+            if(m_console) {
+                std::cout<<ss.str()<<std::endl;
+            }
             m_fout<<"["<<ttstr<<"] "<<msg<<std::endl;
         }
     public:
@@ -89,27 +98,39 @@ namespace log4cxx {
         logger& operator=(logger&&)=default;
 
         void trace(const std::string& msg)noexcept {
-            m_write(std::string("[trace] ")+m_category+" - "+msg);
+            if(m_level<=detail::Level::Trace) {
+                m_write(std::string("[TRACE] ")+m_category+" - "+msg);
+            }
         }
 
         void debug(const std::string& msg)noexcept {
-            m_write(std::string("[debug] ")+m_category+" - "+msg);
+            if(m_level<=detail::Level::Debug) {
+                m_write(std::string("[DEBUG] ")+m_category+" - "+msg);
+            }
         }
 
         void info(const std::string& msg)noexcept {
-            m_write(std::string("[info] ")+m_category+" - "+msg);
+            if(m_level<=detail::Level::Info) {
+                m_write(std::string("[INFO] ")+m_category+" - "+msg);
+            }
         }
 
         void warn(const std::string& msg)noexcept {
-            m_write(std::string("[warn] ")+m_category+" - "+msg);
+            if(m_level<=detail::Level::Warn) {
+                m_write(std::string("[WARN] ")+m_category+" - "+msg);
+            }
         }
 
         void error(const std::string& msg)noexcept {
-            m_write(std::string("[error] ")+m_category+" - "+msg);
+            if(m_level<=detail::Level::Error) {
+                m_write(std::string("[ERROR] ")+m_category+" - "+msg);
+            }
         }
 
         void fatal(const std::string& msg)noexcept {
-            m_write(std::string("[fatal] ")+m_category+" - "+msg);
+            if(m_level<=detail::Level::Fatal) {
+                m_write(std::string("[FATAL] ")+m_category+" - "+msg);
+            }
         }
     };
 
